@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!-- Important -->
+    <title>Editor</title>
+    <meta charset="utf-8">
+    <!--Import styles-->
+    <link rel="stylesheet" href="css/icons.css">
+    <link rel="stylesheet" href="fonts/pe-icon-7-stroke.css">
+    <link rel="stylesheet" href="CodeMirror/lib/codemirror.css">
+    <link rel="stylesheet" href="CodeMirror/addon/hint/show-hint.css">
+    <link rel="stylesheet" href="CodeMirror/addon/dialog/dialog.css">
+    <link rel="stylesheet" href="CodeMirror/addon/search/matchesonscrollbar.css">
+    <link rel="stylesheet" href="css/codium-dark.css">
+    <link type="text/css" rel="stylesheet" href="css/main.css" media="screen,projection" />
+    <link rel="stylesheet" href="CodeMirror/addon/fold/foldgutter.css">
+    <link rel="stylesheet" href="CodeMirror/addon/scroll/simplescrollbars.css">
+    <link rel="stylesheet" href="CodeMirror/addon/lint/lint.css">
+    <link rel="stylesheet" href="CodeMirror/addon/tern/tern.css">
+    <!-- Import icon -->
+    <link rel="icon" href="img/icon.png">
+    <!--Let browser know website is optimized for mobile-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+</head>
+
+<body>
+    <div class="close-screen">
+        <span>CODIUM</span>
+        <h6>Загрузка...</h6>
+        <div class="loader"></div>
+    </div>
+    <div class="nav">
+        <div class="logo">
+            <img src="img/icon.png" alt="">
+        </div>
+        <div class="menu">
+            <a href="#" class="nav-btn save-btn" title="Сохранить код для дальнейшего редактирования">
+                <span class="icon pe-7s-diskette"></span>
+                <span class="text">Сохранить</span>
+            </a>
+            <a href="#" class="nav-btn beatify-btn" title="Отсортировать код">
+                <span class="icon pe-7s-magic-wand"></span>
+                <span class="text">Beautify</span>
+            </a>
+            <a href="#" class="nav-btn" title="Изменить положение элементов на странице">
+                <span class="icon pe-7s-look"></span>
+                <span class="text">Вид</span>
+            </a>
+            <a href="#" class="nav-btn" title="Изменить параметры настроек">
+                <span class="icon pe-7s-config"></span>
+                <span class="text">Настройки</span>
+            </a>
+            <a href="#" class="nav-btn connect-btn">
+                <span class="icon loader"></span>
+                <span class="text">Подключено</span>
+            </a>
+        </div>
+    </div>
+    <div class="view"></div>
+    <div class="settings"></div>
+    <div class="files-editor">
+        <div class="dir-btn pe-7s-folder"></div>
+        <div class="tabs">
+            <div class="tab tab-html active"><span class="file-icon light-orange fa html5-icon"></span>
+                index.html
+                <span class="pe-7s-close"></span>
+            </div>
+            <div class="tab tab-css">
+                <span class="fa light-blue css3-icon"></span>
+                main.css
+                <span class="pe-7s-close"></span>
+            </div>
+            <div class="tab tab-js">
+                <span class="mf light-yellow fa js-icon"></span>
+                main.js
+                <span class="pe-7s-close"></span>
+            </div>
+        </div>
+    </div>
+    <div class="html">
+        <textarea id="html-code" name="html-code"></textarea>
+    </div>
+    <div class="css">
+        <textarea id="css-code" name="css-code"></textarea>
+    </div>
+    <div class="js">
+        <textarea id="js-code" name="js-code"></textarea>
+    </div>
+    <div class="output">
+        <div class="config-output">
+            <div class="tab">
+                <div class="text"></div>
+                <div class="icon"></div>
+            </div>
+        </div>
+        <iframe id="preview"></iframe>
+    </div>
+    <div class="terminal">
+        <div class="resize">=</div>
+        <div id="sandbox"></div>
+    </div>
+    <div class="editor-settings">
+        <span class="edit-set-grp fi terminal-icon"></span>
+        <span class="edit-set-grp cursor-place">
+            Строка: <span class="line">1</span>
+            Символ: <span class="ch">1</span>
+        </span>
+        <span class="edit-set-grp word-wrap">
+            Перенос: <span class="wrap-value">вкл.</span>
+        </span>
+        <span class="indent-size" title="Tab Size" data-toggle="tooltip" data-placement="top" data-container="body"
+            data-animation="true" data-delay="0">
+            <input class="size-value" value="2" min="1" max="4" type="number">
+        </span>
+    </div>
+    <!--Import jQuery before another scripts-->
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="js/jquery-ui.min.js"></script>
+    <script src="js/jquery.nicescroll.min.js"></script>
+    <script src="js/codemirror.min.js"></script>
+    <script src="CodeMirror/keymap/sublime.js"></script>
+    <script src="CodeMirror/addon/tern/tern.js"></script>
+    <script src="CodeMirror/addon/tern/node_modules/acorn/dist/acorn.js"></script>
+    <script src="CodeMirror/addon/tern/node_modules/acorn/dist/acorn_loose.js"></script>
+    <script src="CodeMirror/addon/tern/node_modules/acorn/dist/walk.js"></script>
+    <script src="CodeMirror/addon/tern/lib/signal.js"></script>
+    <script src="CodeMirror/addon/tern/lib/tern.js"></script>
+    <script src="CodeMirror/addon/tern/lib/def.js"></script>
+    <script src="CodeMirror/addon/tern/lib/comment.js"></script>
+    <script src="CodeMirror/addon/tern/lib/infer.js"></script>
+    <script src="CodeMirror/addon/tern/plugin/doc_comment.js"></script>
+    <script src="CodeMirror/addon/lint/jshint.js"></script>
+    <script src="CodeMirror/addon/lint/csslint.js"></script>
+    <script src="CodeMirror/addon/lint/htmlhint.js"></script>
+    <script src="CodeMirror/addon/lint/lint.js"></script>
+    <script src="CodeMirror/addon/lint/javascript-lint.js"></script>
+    <script src="CodeMirror/addon/lint/css-lint.js"></script>
+    <script src="CodeMirror/addon/lint/html-lint.js"></script>
+    <script src="CodeMirror/addon/emmet/node_modules/emmet/node_modules/requirejs/require.js"></script>
+    <script src="js/init.codemirror.js"></script>
+    <script type="text/template" id="tplSandbox">
+        <pre class="output"></pre>
+		<div class="input">
+			<textarea rows="1" spellcheck="false" placeholder="<%= placeholder %>"></textarea>
+		</div>
+	</script>
+    <!-- The command/result template (NB whitespace/line breaks matter inside <pre> tag): -->
+    <script type="text/template" id="tplCommand"><% if (! _hidden) { %><span class="command"><%= command %></span>
+<span class="prefix"><%= this.resultPrefix %></span><span class="<%= _class %>"><%= result %></span>
+<% } %></script>
+    <script src="jsConsole/underscore.js"></script>
+    <script src="jsConsole/backbone.js"></script>
+    <script src="jsConsole/backbone-localStorage.js"></script>
+    <!-- Some extras for the demo: -->
+    <script src="jsConsole/lettering.js"></script>
+    <script src="jsConsole/prettify.js"></script>
+    <!-- The JS Sandbox Console script (requires underscore, backbone and jquery): -->
+    <script src="jsConsole/sandbox-console.js"></script>
+    <!-- When ready, create the model and view -->
+    <script src="js/main.js"></script>
+</body>
+
+</html>

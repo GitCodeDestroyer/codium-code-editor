@@ -1,0 +1,46 @@
+{
+  "name": "emmet-codemirror",
+  "version": "1.1.0",
+  "description": "Emmet plugin for CodeMirror",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/emmetio/codemirror.git"
+  },
+  "keywords": [
+    "emmet",
+    "codemirror",
+    "html",
+    "css",
+    "coding",
+    "speed"
+  ],
+  "author": {
+    "name": "Sergey Chikuyonok"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/emmetio/codemirror/issues"
+  },
+  "homepage": "https://github.com/emmetio/codemirror",
+  "dependencies": {
+    "emmet": "^1.1.2"
+  },
+  "devDependencies": {
+    "gulp": "^3.6.0",
+    "requirejs": "^2.1.11",
+    "gulp-uglify": "^0.2.1",
+    "gulp-requirejs": "^0.1.3",
+    "gulp-rename": "^1.2.0"
+  },
+  "readme": "# Emmet plugin for CodeMirror 4\n\nTo add Emmet support for CodeMirror editor, simply add `dist/emmet.js` as a `<script>` tag into your HTML page right after CodeMirror script. This script creates global `emmetPlugin` variable but also can be loaded as Require.JS module.\n\nAdditionally, you can pass `profile` option into your into CodeMirror's init script to change Emmet’s HTML output style: \n\n```js\nCodeMirror.fromTextArea(document.getElementById(\"code\"), {\n\tmode : 'text/html',\n\t\n\t// define Emmet output profile\n\tprofile: 'xhtml'\n});\n```\n\nAvailable profiles are: _html_, _xhtml_, _xml_, but you can create your own output profile with \n`emmetPlugin.emmet.loadProfiles({name: options})`.\n\nSee [profile.js](https://github.com/emmetio/emmet/blob/master/lib/assets/profile.js#L30)\nfor a list of available options.\n\n### Default keybindings\n* `Cmd-E` or `Tab`: Expand abbreviation\n* `Cmd-D`: Balance Tag (matches opening and closing tag pair)\n* `Shift-Cmd-D`: Balance Tag Inward\n* `Shift-Cmd-A`: Wrap With Abbreviation\n* `Ctrl-Alt-Right`: Next Edit Point\n* `Ctrl-Alt-Left`: Previous Edit Point\n* `Cmd-L`: Select line\n* `Cmd-Shift-M`: Merge Lines\n* `Cmd-/`: Toggle Comment\n* `Cmd-J`: Split/Join Tag\n* `Cmd-K`: Remove Tag\n* `Shift-Cmd-Y`: Evaluate Math Expression\n* `Ctrl-Up`: Increment Number by 1\n* `Ctrl-Down`: Decrement Number by 1\n* `Ctrl-Alt-Up`: Increment Number by 0.1\n* `Ctrl-Alt-Down`: Decrement Number by 0.1\n* `Shift-Ctrl-Up`: Increment Number by 10\n* `Shift-Ctrl-Down`: Decrement Number by 10\n* `Shift-Cmd-.`: Select Next Item\n* `Shift-Cmd-,`: Select Previous Item\n* `Cmd-B`: Reflect CSS Value\n\n### Overriding keybindings\n\nTo override default keybindings, you can call `emmetPlugin.setKeymap(keymap)` method and pass `keymap` object (see [plugin.js](./plugin.js) file for keymap object description). You can also remove default Emmet keybindings by calling `emmetPlugin.clearKeymap()` method.\n\n## Building from source\n\nThis plugin uses [gulp.js](http://gulpjs.com) as build tool:\n\n1. Install [Node.JS and NPM](http://nodejs.org).\n2. Install gulp.js: `npm install -g gulp`\n3. Clone this repo and cd to cloned dir:\n4. In cloned repo run `npm install` and `gulp` to build project. The build tool will create `dist/emmet.js` and `dist/emmet.min.js` files.",
+  "readmeFilename": "README.md",
+  "_id": "emmet-codemirror@1.1.0",
+  "dist": {
+    "shasum": "2c42f7d341b49e93dd0b3de740a5d41111c8b5b0"
+  },
+  "_resolved": "git://github.com/emmetio/codemirror.git#1eebbcf80a8f56ac56000d35cd8de719ee3d9135",
+  "_from": "git://github.com/emmetio/codemirror.git#v1.1.0"
+}

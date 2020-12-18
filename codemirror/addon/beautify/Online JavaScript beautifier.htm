@@ -1,0 +1,223 @@
+<html>
+<!--
+  The MIT License (MIT)
+
+  Copyright (c) 2007-2013 Einar Lielmanis and contributors.
+
+  Permission is hereby granted, free of charge, to any person
+  obtaining a copy of this software and associated documentation files
+  (the "Software"), to deal in the Software without restriction,
+  including without limitation the rights to use, copy, modify, merge,
+  publish, distribute, sublicense, and/or sell copies of the Software,
+  and to permit persons to whom the Software is furnished to do so,
+  subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be
+  included in all copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+  MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+  BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+  ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+  -->
+
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <title>Online JavaScript beautifier</title>
+    <link rel="stylesheet" href="Online%20JavaScript%20beautifier_files/codemirror.css">
+    <script src="Online%20JavaScript%20beautifier_files/codemirror.js"></script>
+    <script src="Online%20JavaScript%20beautifier_files/javascript.js"></script>
+
+    <style>
+        
+        .CodeMirror {
+            border: 1px solid #ccc;
+            height: 450px;
+            font-size: 90%;
+            margin-bottom: 6px;
+            background: white;
+        }
+    </style>
+
+    <script src="Online%20JavaScript%20beautifier_files/jquery_002.js"></script>
+    <script src="Online%20JavaScript%20beautifier_files/jquery.js"></script>
+
+    <script src="Online%20JavaScript%20beautifier_files/beautify.js"></script>
+    <script src="Online%20JavaScript%20beautifier_files/beautify-css.js"></script>
+    <script src="Online%20JavaScript%20beautifier_files/beautify-html.js"></script>
+    <script src="Online%20JavaScript%20beautifier_files/sanitytest.js"></script>
+    <script src="Online%20JavaScript%20beautifier_files/beautify-javascript-tests.js"></script>
+    <script src="Online%20JavaScript%20beautifier_files/beautify-css-tests.js"></script>
+    <script src="Online%20JavaScript%20beautifier_files/beautify-html-tests.js"></script>
+    <script src="Online%20JavaScript%20beautifier_files/javascriptobfuscator_unpacker.js"></script>
+    <script src="Online%20JavaScript%20beautifier_files/urlencode_unpacker.js"></script>
+    <script src="Online%20JavaScript%20beautifier_files/p_a_c_k_e_r_unpacker.js"></script>
+    <script src="Online%20JavaScript%20beautifier_files/myobfuscate_unpacker.js"></script>
+
+    <script>
+        var the = {
+            use_codemirror: (!window.location.href.match(/without-codemirror/)),
+            beautify_in_progress: false,
+            editor: null // codemirror editor
+        };
+
+        function run_tests() {
+            var st = new SanityTest();
+            run_javascript_tests(st, Urlencoded, js_beautify, html_beautify, css_beautify);
+            run_css_tests(st, Urlencoded, js_beautify, html_beautify, css_beautify);
+            run_html_tests(st, Urlencoded, js_beautify, html_beautify, css_beautify);
+            JavascriptObfuscator.run_tests(st);
+            P_A_C_K_E_R.run_tests(st);
+            Urlencoded.run_tests(st);
+            MyObfuscate.run_tests(st);
+            var results = st.results_raw()
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/ /g, '&nbsp;')
+                .replace(/\r/g, '·')
+                .replace(/\n/g, '<br>');
+            $('#testresults').html(results).show();
+        }
+
+
+        function any(a, b) {
+            return a || b;
+        }
+
+        function unpacker_filter(source) {
+            var trailing_comments = '',
+                comment = '',
+                unpacked = '',
+                found = false;
+
+            // cut trailing comments
+            do {
+                found = false;
+                if (/^\s*\/\*/.test(source)) {
+                    found = true;
+                    comment = source.substr(0, source.indexOf('*/') + 2);
+                    source = source.substr(comment.length).replace(/^\s+/, '');
+                    trailing_comments += comment + "\n";
+                } else if (/^\s*\/\//.test(source)) {
+                    found = true;
+                    comment = source.match(/^\s*\/\/.*/)[0];
+                    source = source.substr(comment.length).replace(/^\s+/, '');
+                    trailing_comments += comment + "\n";
+                }
+            } while (found);
+
+            var unpackers = [P_A_C_K_E_R, Urlencoded, /*JavascriptObfuscator,*/ MyObfuscate];
+            for (var i = 0; i < unpackers.length; i++) {
+                if (unpackers[i].detect(source)) {
+                    unpacked = unpackers[i].unpack(source);
+                    if (unpacked != source) {
+                        source = unpacker_filter(unpacked);
+                    }
+                }
+            }
+
+            return trailing_comments + source;
+        }
+
+
+        function beautify() {
+            if (the.beautify_in_progress) return;
+
+            the.beautify_in_progress = true;
+
+            var source = the.editor ? the.editor.getValue() : $('#source').val(),
+                output,
+                opts = {};
+
+            opts.indent_size = 4;
+            opts.indent_char = opts.indent_size == 1 ? '\t' : ' ';
+            opts.max_preserve_newlines = 5;
+            opts.preserve_newlines = opts.max_preserve_newlines !== "-1";
+            opts.keep_array_indentation = true;
+            opts.break_chained_methods = true;
+            opts.indent_scripts = "normal";
+            opts.brace_style = "end-expand";
+            opts.space_before_conditional = true;
+            opts.unescape_strings = false;
+            opts.jslint_happy = true;
+            opts.end_with_newline = true;
+            opts.wrap_line_length = 0;
+
+            if (looks_like_html(source)) {
+                output = html_beautify(source, opts);
+            } else {
+                source = unpacker_filter(source);
+                output = js_beautify(source, opts);
+            }
+            if (the.editor) {
+                the.editor.setValue(output);
+            } else {
+                $('#source').val(output);
+            }
+
+            the.beautify_in_progress = false;
+        }
+
+        function looks_like_html(source) {
+            // <foo> - looks like html
+            // <!--\nalert('foo!');\n--> - doesn't look like html
+
+            var trimmed = source.replace(/^[ \t\n\r]+/, '');
+            var comment_mark = '<' + '!-' + '-';
+            return (trimmed && (trimmed.substring(0, 1) === '<' && trimmed.substring(0, 4) !== comment_mark));
+        }
+    </script>
+</head>
+
+<body>
+        <textarea id="source" rows="30" cols="160" style="display: none;"></textarea>
+
+    <div id="testresults"></div>
+    <script>
+        $(function() {
+
+            var default_text =
+                "// This is just a sample script. Paste your real code (javascript or HTML) here.\n\nif ('this_is'==/an_example/){of_beautifer();}else{var a=b?(c%d):e[f];}";
+            var textArea = $('#source')[0];
+
+            if (the.use_codemirror && typeof CodeMirror !== 'undefined') {
+                the.editor = CodeMirror.fromTextArea(textArea, {
+                    theme: 'default',
+                    lineNumbers: true
+                });
+                the.editor.focus();
+
+                the.editor.setValue(default_text);
+            } else {
+                $('#source').val(default_text).bind('click focus', function() {
+                    if ($(this).val() == default_text) {
+                        $(this).val('');
+                    }
+                }).bind('blur', function() {
+                    if (!$(this).val()) {
+                        $(this).val(default_text);
+                    }
+                });
+            }
+
+
+            $(window).bind('keydown', function(e) {
+                if (e.ctrlKey && e.keyCode == 13) {
+                    beautify();
+                }
+            })
+
+        });
+    </script>
+
+
+
+</body>
+
+</html>
